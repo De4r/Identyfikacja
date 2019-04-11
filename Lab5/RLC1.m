@@ -9,8 +9,8 @@ w=sqrt(1/(L*C));
 b=R/(2*L);
 wtl=sqrt(w^2-b^2);
 % amplituda oraz funkcja napiecia
-A=1;
-Ue=A*sin(wtl*t);
+a=1;
+Ue=a*sin(wtl*t);
 % macierze A i B
 A =[ -R/L, -1/L; 1/C, 0];
 B = [1/L; 0];

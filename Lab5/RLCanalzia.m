@@ -17,11 +17,11 @@ A=1;
 [t, y] = ode45('RLC1', tr, y0);
 
 %macierze wyjscia z systemu
-C = [1 0; 0 1; R 0; -R -1];
-D = [0; 0; 0; 1];
+Cu = [1 0; 0 1; R 0; -R -1];
+Du = [0; 0; 0; 1];
 Ue = A*sin(wtl*t);
 
-X = C*y' + D*Ue';
+X = Cu*y' + Du*Ue';
 X = X';
 % X = RLCwyjscie(t, y); % ten wiersz robi to samo co te powy¿ej
 %blad numeryczny
@@ -46,35 +46,41 @@ grid on
 
 % wykres macierzy X - wyjscia z systemu [i, Uc, Ur, Ul)
 figure(2)
-subplot(4, 1, 1);
+subplot(5, 1, 1);
 plot(t, X(:,1));
 hold on
 grid on
 xlabel('Czas [s]');
 ylabel('Prad w obwodzie [A]');
 title('Prad')
-subplot(4, 1, 2);
+subplot(5, 1, 2);
 plot(t, X(:,2));
 xlabel('Czas [s]');
 ylabel('Napiecie [V]');
 title('Napiecie na kondensatorze')
 hold on
 grid on
-subplot(4, 1, 3);
+subplot(5, 1, 3);
 plot(t, X(:,3));
 hold on
 grid on
 xlabel('Czas [s]');
 ylabel('Napiecie [V]');
 title('Napiecie na oporniku');
-subplot(4, 1, 4);
+subplot(5, 1, 4);
 plot(t, X(:,4));
 xlabel('Czas [s]');
 ylabel('Napiecie [V]');
 title('Napiecie na cewce');
 hold on
 grid on
-
+subplot(5, 1, 5);
+plot(t, Ue);
+xlabel('Czas [s]');
+ylabel('Napiecie [V]');
+title('Napiecie wymuszenia');
+hold on
+grid on
 %bl¹d
 figure(3)
 plot(t, blad);
