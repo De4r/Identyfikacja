@@ -1,42 +1,45 @@
 clc
 clear all
+close all
 
-% identyfikacja plikow tekstowych
 Fp=48000; % Hz
 tp=1/Fp;
 
-plik1=fopen('we_obiekt2.txt','r');
+plik1=fopen('we_obiekt3.txt','r');
 wejscie=fscanf(plik1,'%f',Inf);
 fclose(plik1);
 
-plik2=fopen('wy_obiekt2.txt','r');
+plik2=fopen('wy_obiekt3.txt','r');
 wyjscie=fscanf(plik2,'%f',Inf);
 fclose(plik2);
 
 t=0:tp:(length(wejscie)-1)*tp;
 
+% wykresy przebiegu czasowego
+%%
 figure(1)
-subplot(2,1,1)
+subplot(2,2,1)
 plot(t,wejscie)
 xlabel('Czas [s');
 ylabel('Amplituda');
 title('Przebieg sygnalu wejscia')
 
-subplot(2,1,2)
+subplot(2,2,3)
 wyswietl_fft(wejscie,Fp);
 title('Widmo wejscia')
 
-figure(2)
-subplot(2,1,1)
+subplot(2,2,2)
 plot(t,wyjscie)
 xlabel('Czas [s');
 ylabel('Amplituda');
 title('Przebieg sygnalu wyjscia')
 
-subplot(2,1,2)
+subplot(2,2,4)
 wyswietl_fft(wyjscie, Fp);
 title('Widmo wyjscia')
+%%
 
+% wyznaczenie korelacji ze wzglêdu na wystêpuj¹ce opoznienie
 
 % funkcja korelacja
 [acor, lag] = xcorr(wyjscie,wejscie);
@@ -58,33 +61,33 @@ probka = lag(I) - 2 % 2 probki bo to opoznienie komputera
 wejscie = wejscie(1:end-probka+1);
 wyjscie = wyjscie(probka:end);
 t1 = 0:tp:(length(wejscie)-1)*tp;
+%%
 
-%nowe wykresy
-
+% Ponowne wyrysowanie wejscia i wyjscia
 figure(4)
-subplot(2,1,1)
+subplot(2,2,1)
 plot(t1,wejscie)
 xlabel('Czas [s');
 ylabel('Amplituda');
 title('Przebieg sygnalu wejscia')
 
-subplot(2,1,2)
+subplot(2,2,3)
 wyswietl_fft(wejscie,Fp);
 title('Widmo wejscia')
 
-figure(5)
-subplot(2,1,1)
+
+subplot(2,2,2)
 plot(t1,wyjscie)
 xlabel('Czas [s');
 ylabel('Amplituda');
 title('Przebieg sygnalu wyjscia')
 
-subplot(2,1,2)
+subplot(2,2,4)
 wyswietl_fft(wyjscie, Fp);
 title('Widmo wyjscia')
+%%
 
-
-% funkcja korelacja
+%funkcja korelacja
 [acor, lag] = xcorr(wyjscie,wejscie);
 op = lag*tp;
 
@@ -93,12 +96,14 @@ plot(op, acor)
 title('Korelacja wzajemna')
 xlabel('Opoznienie [s]')
 ylabel('Amplituda')
+%%
 
-% macierz danych
+%IDENTYFIKACJA
+%macierz danych
 data=iddata(wyjscie, wejscie, tp);
 
 %okolo 90 procent dopasaowania, wyznaczenie transformaty
-T=tfest(data, 4, 2) % dane, stopien mianownika , stopien licznika
+T=tfest(data, 3, 1) % dane, stopien mianownika , stopien licznika
 
 T_s=tf(T.Numerator, T.Denominator);
 
@@ -111,6 +116,8 @@ plot(real(z),imag(z),'mo')
 hold on
 plot(real(p), imag(p), 'b*')
 grid on
+
+%%
 
 figure(8)
 nyquist(T_s); %amplitudowo fazowa
@@ -144,9 +151,10 @@ impulse(T_s);
 figure(12)
 step(T_s);
 
+%%
+
 %symulacje
 
-y1=lsim(T_s, wejscie, t1); % z tego mozna odtworzyc znowu fft
 
 w1=500*2*pi;
 wym=sin(w1*t1);
@@ -202,4 +210,24 @@ title('Widmo wyjscia')
 
 
 
+y1=lsim(T_s, wejscie, t1); % z tego mozna odtworzyc znowu fft
 
+figure(15)
+subplot(2,2,1)
+plot(t1,wejscie)
+xlabel('Czas [s');
+ylabel('Amplituda');
+title('Przebieg sygnalu wejscia')
+
+subplot(2,2,3)
+wyswietl_fft(wejscie, Fp)
+title('Widmo wejscia')
+
+subplot(2,2,2)
+plot(t1, y1)
+xlabel('Czas [s');
+ylabel('Amplituda');
+title('Przebieg sygnalu wyjscia')
+subplot(2,2,4)
+wyswietl_fft(y1, Fp)
+title('Widmo wyjscia')
